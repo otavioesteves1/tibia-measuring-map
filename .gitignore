@@ -1,0 +1,17 @@
+# Os PNGs com o grid embutido nao sao usados pelo site (ele le a pasta
+# minimap-without-markers). Ficam de fora para nao subir 13 MB repetidos.
+minimap/*.png
+
+# Baixado por tools/baixar_areas.py. O data/areas.js gerado a partir dele ja
+# vai no repositorio, entao nao precisa subir o bruto tambem.
+data/areas.json
+
+# Coisas locais
+.claude/
+*.log
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc

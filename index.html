@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapa do Tibia — visualizador local</title>
+<link rel="stylesheet" href="assets/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2312100d'/><path d='M6 24 L13 8 L19 18 L23 12 L27 24 Z' fill='%23d8a94a'/></svg>">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ====================================================== barra topo -->
+  <header id="barra">
+    <div class="marca">TIBIA MAP<small>visualizador local</small></div>
+
+    <input id="ir-para" class="campo" style="width:180px"
+           placeholder="ir para  x, y, z  ⏎" title="Digite uma coordenada e aperte Enter. Ex.: 32369, 32241, 7">
+
+    <div id="coord">x <b>—</b>  y <b>—</b>  z <b>—</b></div>
+
+    <button class="btn icone" id="b-compartilhar" title="Compartilhar esta coordenada (tecla Y)">⧉</button>
+    <button class="btn icone" id="b-menos" title="Diminuir zoom (tecla -)">−</button>
+    <button class="btn icone" id="b-mais" title="Aumentar zoom (tecla =)">+</button>
+
+    <span class="espaco"></span>
+
+    <button class="btn" id="b-camada" title="Alternar entre cores do minimapa e dados de pathfinding (tecla P)">
+      <span class="rot">Cores</span><span class="tecla">P</span></button>
+    <button class="btn" id="b-marcadores" title="Marcadores do jogo (tecla M)">Marcadores<span class="tecla">M</span></button>
+    <button class="btn" id="b-pois" title="Meus POIs (tecla O)">Meus POIs<span class="tecla">O</span></button>
+    <button class="btn" id="b-grade" title="Grade de subáreas 256×256 (tecla G)">Grade<span class="tecla">G</span></button>
+    <button class="btn" id="b-areas" title="Contornos e nomes das áreas da Cyclopedia (tecla A)">Áreas<span class="tecla">A</span></button>
+    <button class="btn" id="b-exiva" title="Faixas de alcance do exiva (tecla E)">Exiva<span class="tecla">E</span></button>
+    <button class="btn" id="b-ocultar" title="Esconder de vez o que já foi conferido (tecla X)">Pendentes<span class="tecla">X</span></button>
+    <div id="progresso-topo" title="progresso geral">0%</div>
+    <button class="btn icone" id="b-lateral" title="Mostrar/ocultar painel lateral (tecla B)">▤</button>
+    <button class="btn icone" id="b-tela-cheia" title="Tela cheia (tecla F)">⛶</button>
+    <button class="btn" id="b-ajuda" title="Lista de comandos e atalhos (tecla H)">? <span class="rot">Comandos</span><span class="tecla">H</span></button>
+  </header>
+
+  <!-- ========================================================== corpo -->
+  <div id="corpo">
+
+    <div id="palco">
+      <canvas id="tela"></canvas>
+
+      <div id="andares"></div>
+      <div id="popup"></div>
+      <div id="carregando"></div>
+      <div id="aviso"></div>
+
+      <div id="escala">
+        <span class="txt">—</span>
+        <div class="barra-escala" style="width:110px"></div>
+      </div>
+      <div id="dica-zoom"></div>
+    </div>
+
+    <!-- ------------------------------------------------------- lateral -->
+    <aside id="lateral">
+      <nav id="abas">
+        <button data-aba="subareas" class="ativo">ÁREAS</button>
+        <button data-aba="marcadores">MARCADORES</button>
+        <button data-aba="pois">POIs</button>
+        <button data-aba="sobre">?</button>
+      </nav>
+
+      <!-- subareas / progresso -->
+      <section class="painel ativo" data-aba="subareas">
+        <div id="recompensas"></div>
+
+        <div class="ferramentas">
+          <input id="busca-subarea" class="campo" placeholder="buscar cidade ou subárea">
+          <select id="ordem-areas" class="campo" title="Como ordenar a lista de cidades">
+            <option value="facil">ordem: menos subáreas (mais fácil)</option>
+            <option value="dificil">ordem: mais subáreas (mais difícil)</option>
+            <option value="restante">ordem: menos subáreas faltando</option>
+            <option value="faltaPouco">ordem: mais perto de terminar</option>
+            <option value="acesso">ordem: por acesso e perigo (palpite)</option>
+            <option value="marcadores">ordem: menos bandeiras no total</option>
+            <option value="nome">ordem: alfabética</option>
+          </select>
+          <label class="rotulo linha-check"><input type="checkbox" id="sub-andar"> só as que aparecem neste andar</label>
+          <label class="rotulo linha-check"><input type="checkbox" id="sub-esconder"> esconder as concluídas</label>
+          <div class="linha">
+            <button class="btn" id="btn-abrir-tudo" style="flex:1">abrir / fechar todas</button>
+            <button class="btn" id="btn-limpar-selecao" title="Tirar o destaque do mapa (tecla Esc)">✕ seleção</button>
+          </div>
+        </div>
+
+        <div id="lista-subareas"></div>
+
+        <div id="rodape-subareas">
+          <span id="resumo-progresso">—</span>
+          <span style="display:flex;gap:4px">
+            <button class="btn mini" id="btn-exportar-sub" title="Baixar backup de POIs + progresso">backup</button>
+            <button class="btn mini" id="btn-limpar-prog" title="Zerar todo o progresso">zerar</button>
+          </span>
+        </div>
+      </section>
+
+      <!-- marcadores do jogo -->
+      <section class="painel" data-aba="marcadores">
+        <div class="ferramentas">
+          <input id="busca-marcador" class="campo" placeholder="buscar por texto, tipo, coord. ou subárea">
+          <select id="filtro-icone" class="campo"></select>
+          <label class="rotulo linha-check"><input type="checkbox" id="so-andar" checked> só o andar atual</label>
+          <label class="rotulo linha-check"><input type="checkbox" id="so-texto"> só os que têm anotação</label>
+          <label class="rotulo linha-check"><input type="checkbox" id="so-pendentes"> só os que faltam conferir</label>
+          <label class="rotulo linha-check" title="Setas vermelhas e verdes marcam escadas, buracos e cordas — não são pontos para conferir"><input type="checkbox" id="sem-setas" checked> esconder as setas (escadas/buracos)</label>
+        </div>
+        <div id="lista-marcadores"></div>
+        <div id="rodape-lista">
+          <span id="conta-marcadores">—</span>
+          <button class="btn" id="btn-importar-jogo" style="padding:2px 7px;font-size:11px"
+                  title="Copiar os marcadores deste andar para os seus POIs">copiar p/ meus POIs</button>
+        </div>
+      </section>
+
+      <!-- POIs do usuario -->
+      <section class="painel" data-aba="pois">
+        <div class="ferramentas">
+          <input id="busca-poi" class="campo" placeholder="buscar nos meus POIs">
+          <div class="linha">
+            <button class="btn" id="btn-novo-poi" style="flex:1">+ Novo POI aqui</button>
+          </div>
+
+          <div id="form-poi" style="display:none;flex-direction:column;gap:6px;
+               padding:9px;border:1px solid var(--ouro);border-radius:6px;background:#100e0b">
+            <div class="rotulo">coordenada</div>
+            <div class="linha">
+              <input id="poi-x" class="campo" type="number" placeholder="x">
+              <input id="poi-y" class="campo" type="number" placeholder="y">
+              <input id="poi-z" class="campo" type="number" min="0" max="15" placeholder="z" style="max-width:64px">
+            </div>
+            <div class="rotulo">ícone</div>
+            <select id="poi-icone" class="campo"></select>
+            <div class="rotulo">título</div>
+            <input id="poi-titulo" class="campo" placeholder="ex.: Respawn de Dragons">
+            <div class="rotulo">anotação</div>
+            <textarea id="poi-texto" class="campo" rows="3" style="resize:vertical"
+                      placeholder="detalhes, requisitos, rota..."></textarea>
+            <div class="linha">
+              <button class="btn" id="btn-salvar-poi" style="flex:1">Criar POI</button>
+              <button class="btn" id="btn-cancelar-poi">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="lista-pois"></div>
+
+        <div id="rodape-pois">
+          <span id="conta-pois">—</span>
+          <span style="display:flex;gap:4px">
+            <button class="btn" id="btn-exportar" style="padding:2px 7px;font-size:11px">exportar</button>
+            <label class="btn" style="padding:2px 7px;font-size:11px;cursor:pointer">
+              importar<input type="file" id="arq-importar" accept=".json,application/json" hidden>
+            </label>
+          </span>
+        </div>
+      </section>
+
+      <!-- sobre -->
+      <section class="painel" data-aba="sobre">
+        <div style="padding:14px;overflow-y:auto;font-size:12px;line-height:1.65;color:var(--texto-fraco)">
+          <p style="color:var(--ouro-claro);font-weight:600;margin-bottom:8px">O que é isto</p>
+          <p>Um visualizador offline que costura os PNGs de 256×256 do minimapa do Tibia
+             num mapa contínuo, com os 16 andares e os marcadores do
+             <code>minimapmarkers.bin</code>.</p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin:14px 0 8px">Mapa carregado</p>
+          <p id="info-mapa" style="font-family:Consolas,monospace;font-size:11px;white-space:pre-line"></p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin:14px 0 8px">Camadas</p>
+          <p><b>Cores</b> — o minimapa que você vê no jogo.<br>
+             <b>Pathfinding</b> — os arquivos <code>WaypointCost</code>, que guardam o custo
+             de caminhada de cada sqm (útil para ver o que é andável).</p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin:14px 0 8px">Atualizar o mapa</p>
+          <p>Copie os PNGs novos para a pasta do mapa e rode:</p>
+          <p style="font-family:Consolas,monospace;font-size:11px;background:#100e0b;
+                    padding:7px;border-radius:4px;border:1px solid var(--borda)">
+             python tools/gerar_dados.py</p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin-bottom:8px">Measuring Tibia Quest</p>
+          <p>Cada subárea tem <b>7 Points of Interest</b> sorteados só para o seu
+             personagem. Eles saem de um <b>pool fixo</b> de posições — que é justamente
+             o que as bandeiras deste mapa são. Achou os 7, a subárea fica desbloqueada
+             para sempre.</p>
+          <p>Por área: <b>30%</b> mostra os NPCs no Cyclopedia Map, <b>70%</b> mostra as
+             passagens e teleports, <b>100%</b> mostra as criaturas, avisa de invasões,
+             dá o achievement e liga o bônus de speed.</p>
+          <p><b>10 áreas</b> 100% → Discoverer Outfit com o NPC Charos.
+             <b>15</b> → 1º addon. <b>20</b> → 2º addon e o achievement
+             <i>Measuring the World</i>. Mais os títulos <i>Dedicated Entrepreneur</i>
+             (50%) e <i>Globetrotter</i> (100%), e 22 achievements no total.</p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin:14px 0 8px">O bônus de speed</p>
+          <p>O manual oficial diz: <i>"If you have fully discovered an area, your
+             character benefits from a speed bonus <b>while in this area</b>. The more
+             areas you have fully discovered, the higher the speed bonus."</i></p>
+          <p>Ou seja: <b>não existe valor por cidade.</b> Toda área concluída dá o mesmo
+             bônus, e o tamanho dele depende de <b>quantas</b> áreas você fechou. E ele
+             só vale enquanto você está dentro de uma área já concluída.</p>
+          <p>A CipSoft só publicou os extremos — <b>100</b> com 1 área e <b>195</b> com
+             20. A curva entre eles não é pública, então o painel faz uma
+             <b>interpolação linear</b>:</p>
+          <p style="font-family:Consolas,monospace;font-size:11px;background:#100e0b;
+                    padding:7px;border-radius:4px;border:1px solid var(--borda)">
+             speed = 100 + 5 × (áreas − 1)</p>
+          <p>1 área → 100 · 3 → 110 · 10 → 145 · 20 → 195. Bate nas duas pontas
+             confirmadas, mas <b>não é número oficial</b> — por isso o <code>~</code>.
+             O valor exato aparece no tooltip do Cyclopedia Map, dentro do jogo. Se o
+             seu jogo mostrar outro número, me fale que eu ajusto a curva em
+             <code>data/quest.js</code>.</p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin:14px 0 8px">Áreas e subáreas</p>
+          <p>São as regiões da Cyclopedia do próprio jogo: 21 áreas-mãe (Thais, Venore,
+             Kazordoon…) com 192 subáreas (Thais City, Green Claw Swamp, Fibula…). Os
+             polígonos são 2D — uma subárea vale para os 16 andares.</p>
+          <p>Cada marcador já vem com a sua subárea calculada. Os que ficam fora de
+             qualquer contorno — normalmente cavernas que passam por baixo da borda —
+             foram colados na subárea mais próxima (nenhum a mais de 75 sqm).</p>
+          <p>As 517 setas vermelhas e verdes ficam fora do checklist: são escadas,
+             buracos e cordas. Sobram 4688 marcadores para conferir. Dá para trazê-las
+             de volta na aba MARCADORES.</p>
+          <p>Dados das áreas: <code>tibiamaps.io</code>, originalmente do cliente do Tibia.
+             Atualize com <code>python tools/baixar_areas.py</code>.</p>
+          <p>Cruzei as duas wikis para saber quais subáreas realmente contam:
+             <b>160</b> aparecem nas duas, <b>13</b> só em uma (etiqueta <b>?</b> — na
+             dúvida, contam), e o resto não conta (etiqueta <b>não conta</b>, e fica fora
+             da porcentagem da área).</p>
+          <p><b>Dawnport</b> fica de fora: é a ilha tutorial e não entra na quest.</p>
+          <p>A ordem <i>da mais fácil para a mais difícil</i> é um palpite meu, não da wiki
+             — baseado em quest de acesso, level exigido, perigo e tamanho. Está em
+             <code>data/quest.js</code>, é só editar. Use o seletor para outra ordem.</p>
+
+          <p style="color:var(--ouro-claro);font-weight:600;margin:14px 0 8px">Seus dados</p>
+          <p>POIs e progresso ficam no <code>localStorage</code> deste navegador e são
+             salvos a cada mudança. Use <b>backup</b> para guardar um JSON com tudo.</p>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<!-- ============================================================ ajuda -->
+<div id="ajuda">
+  <div class="caixa">
+    <button class="fechar" title="Fechar">×</button>
+    <h2>Mapa do Tibia — atalhos</h2>
+    <p>Arraste com o mouse para mover. Roda do mouse para zoom. Duplo clique aproxima.</p>
+
+    <h3>Conferindo o mapa</h3>
+    <table>
+      <tr><td><b>clique</b> numa bandeira</td>
+          <td>marca como <b>conferido</b> — ela fica cinza e transparente. Clique de novo para desmarcar.</td></tr>
+      <tr><td><kbd>Shift</kbd> + clique</td>
+          <td>conclui a <b>subárea</b> daquele ponto (Thais City, Green Claw Swamp…): ela
+              fica cinza e some com todas as bandeiras dela, em todos os andares</td></tr>
+      <tr><td><kbd>V</kbd></td><td>conclui a subárea que está no centro da tela</td></tr>
+      <tr><td><kbd>X</kbd></td><td>esconder de vez tudo que já foi conferido</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + clique</td><td>só abre o marcador na lista, sem conferir</td></tr>
+      <tr><td><b>clique</b> no mapa vazio</td>
+          <td>seleciona a região dali e acende ela no mapa; a lista pula para a subárea</td></tr>
+      <tr><td><b>botão direito</b> (clique seco)</td><td>cria um POI seu naquele ponto</td></tr>
+    </table>
+
+    <h3>Marcar várias de uma vez</h3>
+    <table>
+      <tr><td><b>arrastar</b> com o<br><b>botão direito</b></td>
+          <td>desenha uma caixa: ao soltar, tudo que estiver dentro vira conferido.
+              Enquanto arrasta, a caixa mostra ao vivo quantas bandeiras vai pegar.</td></tr>
+      <tr><td><kbd>Shift</kbd> + botão direito</td><td>o contrário: <b>desmarca</b> o que estiver dentro</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>cancela a caixa antes de soltar</td></tr>
+    </table>
+    <p>O <b>botão esquerdo</b> continua movendo o mapa, e o clique seco com o direito
+       (sem arrastar) continua criando um POI.</p>
+    <p>A caixa só age no <b>andar atual</b> e no que está visível na tela — o que estiver
+       escondido por um filtro não é tocado.</p>
+    <p>Tudo é salvo sozinho, a cada mudança. A aba <b>ÁREAS</b> lista as 21 cidades
+       da Cyclopedia; abra uma para ver as subáreas dela, com o progresso de cada uma.
+       O checkbox da cidade conclui todas de uma vez.</p>
+
+    <h3>Navegação</h3>
+    <table>
+      <tr><td><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></td><td>mover o mapa</td></tr>
+      <tr><td><kbd>=</kbd> / <kbd>-</kbd></td><td>aproximar / afastar</td></tr>
+      <tr><td><kbd>K</kbd></td><td>subir um andar</td></tr>
+      <tr><td><kbd>J</kbd></td><td>descer um andar</td></tr>
+      <tr><td><kbd>L</kbd></td><td>voltar ao térreo (z=7)</td></tr>
+      <tr><td><kbd>C</kbd></td><td>centralizar no último ponto destacado</td></tr>
+      <tr><td><b>roda do mouse</b><br>na lista de andares</td>
+          <td>sobe e desce de andar sem tirar a mão do mouse</td></tr>
+    </table>
+
+    <h3>Camadas e sobreposições</h3>
+    <table>
+      <tr><td><kbd>P</kbd></td><td>alternar cores ↔ pathfinding (WaypointCost)</td></tr>
+      <tr><td><kbd>M</kbd></td><td>marcadores do jogo</td></tr>
+      <tr><td><kbd>O</kbd></td><td>meus POIs</td></tr>
+      <tr><td><kbd>A</kbd></td><td>contornos e nomes das áreas da Cyclopedia</td></tr>
+      <tr><td><kbd>G</kbd></td><td>grade de 256×256 dos arquivos do minimapa</td></tr>
+      <tr><td><kbd>E</kbd></td><td>faixas de alcance do exiva a partir do centro</td></tr>
+    </table>
+
+    <h3>Interface</h3>
+    <table>
+      <tr><td><kbd>B</kbd></td><td>mostrar/ocultar o painel lateral</td></tr>
+      <tr><td><kbd>F</kbd></td><td>tela cheia</td></tr>
+      <tr><td><kbd>H</kbd></td><td>esta lista de comandos</td></tr>
+      <tr><td><kbd>Y</kbd></td><td>compartilhar a coordenada do centro da tela</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>fechar</td></tr>
+    </table>
+
+    <h3>Endereço da página</h3>
+    <p>A URL guarda a posição no formato <code>#x,y,z:zoom</code> — dá para favoritar
+       um lugar ou colar o link para reabrir exatamente ali.</p>
+  </div>
+</div>
+
+<!-- ==================================================== compartilhar -->
+<div id="compartilhar">
+  <div class="caixa">
+    <button class="fechar" title="Fechar">×</button>
+    <h2>Compartilhar coordenada</h2>
+    <p>É o ponto no <b>centro da tela</b>. Mova o mapa para mudar, ou clique num
+       marcador da lista para centralizar nele antes.</p>
+    <div class="linhas"></div>
+    <p style="margin-top:14px">O <b>link do tibiamaps.io</b> abre no navegador de
+       qualquer pessoa, mesmo quem não tem esta pasta — ele vai direto na coordenada
+       e no andar (o zoom fica no padrão de lá, porque a escala deles é outra).
+       O <b>link deste mapa</b> só funciona na sua máquina.</p>
+    <p>Se o navegador não deixar copiar sozinho, o texto fica selecionado para você
+       apertar <kbd>Ctrl</kbd>+<kbd>C</kbd>. Clicar no valor também seleciona.</p>
+  </div>
+</div>
+
+<script src="data/mapdata.js"></script>
+<script src="data/areas.js"></script>
+<script src="data/quest.js"></script>
+<script src="data/markers.js"></script>
+<script src="assets/icones.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
