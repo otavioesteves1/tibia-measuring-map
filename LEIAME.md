@@ -97,7 +97,7 @@ também funciona assim, mas esse caminho não foi testado aqui; o modo servidor 
 | Andares | 16 (z=0 a z=15) |
 | Área | 2560 × 2048 sqm — x 31744–34303, y 30976–33023 |
 | Marcadores do jogo | 5205, dos quais **4688 entram no checklist** |
-| Áreas da Cyclopedia | 21 áreas / 192 subáreas (160 com marcador) |
+| Áreas da Cyclopedia | 20 áreas da quest / **171 subáreas no checklist** |
 
 As 517 setas vermelhas e verdes ficam de fora: elas marcam escadas, buracos e
 cordas, não pontos para conferir. Se quiser trazê-las de volta, desmarque
@@ -145,8 +145,8 @@ contornos e os nomes das áreas por cima do mapa.
 
 São as regiões da **Cyclopedia do próprio jogo**, não quadrantes: **21 áreas-mãe**
 (Thais, Venore, Kazordoon, Edron, Zao…) com **192 subáreas** (Thais City, Green
-Claw Swamp, Fibula, Rookgaard, Jakundaf Desert…). **160 delas entram no
-checklist** — 162 têm marcador, mas duas só tinham setas.
+Claw Swamp, Fibula, Jakundaf Desert…). **171 delas entram no checklist** — as
+que a quest pede, tenham elas bandeira no seu arquivo ou não.
 
 Os polígonos são 2D: uma subárea vale para os **16 andares**. Concluir "Thais
 City" fecha a cidade inteira, de cima a baixo.
@@ -189,7 +189,8 @@ importa se o pool de bandeiras dela tem 5 ou 140 — então o trabalho de uma á
 | Venore, Zao | 13 | 91 |
 | **Vandura** | **16** | **112** |
 
-Total: **173 subáreas, 1211 pontos** para achar.
+Total: **173 subáreas, 1211 pontos** para achar — o site acompanha 171 delas
+(1197 pontos).
 
 ### Ordenação da lista
 
@@ -271,22 +272,32 @@ Nas subáreas:
 - **!** — tem restrição de acesso (Asura Palace pede level 250, Zzaion só abre
   com Orc Raid em Zao Steppe…)
 
-### O que este rastreador não vê
+### Subáreas sem bandeira
 
-Ele acompanha uma subárea **só se você tiver bandeira nela**. A lista mostra o
-número real de subáreas da área, e o badge **−N** avisa quantas ficaram de fora:
+Nem toda subárea da quest tem bandeira no `minimapmarkers.bin`. **Elas aparecem
+na lista assim mesmo**, com a etiqueta **sem bandeira** e `—` no lugar da
+contagem: dá para marcar normalmente, só que o mapa não ajuda a achar os 7
+pontos — você faz no jogo e marca aqui quando fechar.
 
-| Área | Subáreas | Sem bandeira |
-|---|---|---|
-| Kilmaresh | 11 | −7 |
-| Marapur | 11 | −4 |
-| Roshamuul | 7 | −3 |
-| Edron | 12 | −2 |
-| Thais, Southern Darama, Zao | — | −1 cada |
+São **17**, em 7 áreas:
 
-No total o contador acompanha **154 de 173** subáreas. Fechar 100% aqui não
-garante 100% no jogo nessas áreas. Conforme você explorar e marcar, rode
-`python tools/gerar_dados.py` de novo que a cobertura melhora.
+| Área | Sem bandeira |
+|---|---|
+| Kilmaresh | Central Steppe, Furious Crater, Green Belt, Rascacoon, The Wreckoning |
+| Marapur | Moonfall, Moonstone Crater, Salgadora, Thalassara Surroundings |
+| Roshamuul | as três de Isle of Ada |
+| Edron | Cyclopolis, Edron Hero Fortress |
+| Southern Darama | Ankrahmun Pharaoh Tombs |
+| Thais | Targuna |
+| Zao | Norcferatu Fortress |
+
+Uma área só fecha 100% com **todas**, inclusive essas. O contador cobre **171
+subáreas**.
+
+O badge **−N** no nome da cidade quer dizer outra coisa: subáreas que a quest
+tem mas que **nem existem nos dados do mapa** — Kilmaresh −2 (*Ruins of Nuur* e
+*Salt Caves*, área nova demais). Essas não dá para acompanhar de jeito nenhum
+por aqui.
 
 Outra diferença: a lista do jogo tem **23 subáreas a mais** que a da wiki — a
 página de lá está marcada como esboço. O contador usa a lista **do jogo**, que

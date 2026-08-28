@@ -494,3 +494,9 @@ code{font-family:Consolas,monospace;font-size:11px;color:var(--ouro-claro);
 #btn-limpar-selecao{flex:0 0 auto;opacity:.45;pointer-events:none}
 body.com-selecao #btn-limpar-selecao{opacity:1;pointer-events:auto}
 body.com-selecao #btn-limpar-selecao:hover{border-color:var(--vermelho);color:var(--vermelho)}
+.etiq-semband{
+  margin-left:6px;padding:0 5px;border-radius:8px;font-size:9px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.4px;vertical-align:middle;
+  background:#3a2f22;color:#c9a86a;border:1px solid #574429;
+}
+.sub-item.sem-bandeira .contagem{opacity:.5}

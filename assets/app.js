@@ -426,10 +426,15 @@
       TOTAL_MARCAS++;
     });
 
-    // Agrupamento area-mae -> subareas, so as que tem marcador.
+    /* Agrupamento area-mae -> subareas. Entra quem tem bandeira OU quem conta
+       para a quest: varias subareas da quest nao tem nenhuma bandeira no
+       minimapmarkers (Kilmaresh > Green Belt, Rascacoon...) e sumiam do
+       checklist, sem jeito de marcar. Fica de fora so quem nao tem bandeira
+       nem entra na quest (Rookgaard, Great Expedition Island...). */
     var porArea = {};
     SUB.forEach(function (s, i) {
-      if (!contaSub[i]) return;
+      if (!contaSub[i] &&
+          !(contaParaQuest(s.area) && contaNaArea(s.area, s.subarea))) return;
       (porArea[s.area] || (porArea[s.area] = [])).push(i);
     });
     GRUPOS = Object.keys(porArea).map(function (nome) {
@@ -1758,25 +1763,33 @@
       }
       var s = document.createElement('div');
       s.className = 'sub';
-      // o rastreador so enxerga subarea onde voce tem marcador; se o jogo tem
-      // mais, avisa - senao "100%" aqui daria a impressao errada
+      /* Duas coisas diferentes que o usuario precisa distinguir:
+         - semBand : subarea esta na lista e da para marcar, mas o mapa nao tem
+                     bandeira nenhuma para guiar (ex.: Kilmaresh > Green Belt)
+         - faltaNoMapa : a subarea nem existe nos dados do mapa (area nova) */
       var naQuestTotal = subsDaQuest(g);
-      var semMarca = naQuestTotal - total;
+      var faltaNoMapa = Math.max(0, naQuestTotal - total);
+      var semBand = valem.filter(function (i) { return !contaSub[i]; }).length;
+
       s.textContent = naQuestTotal + (naQuestTotal === 1 ? ' subárea' : ' subáreas') +
                       ' · ' + (naQuestTotal * (Q.poiPorSubarea || 7)) + ' pontos' +
-                      (semMarca > 0 ? ' · ' + semMarca + ' sem bandeira aqui' : '') +
+                      (semBand > 0 ? ' · ' + semBand + ' sem bandeira' : '') +
                       (g.nota ? ' · ' + g.nota : '');
       s.title = naQuestTotal + ' subáreas × ' + (Q.poiPorSubarea || 7) +
         ' Points of Interest = ' + (naQuestTotal * (Q.poiPorSubarea || 7)) +
         ' pontos para achar nesta área.' +
-        (semMarca > 0
-          ? '\n\n' + semMarca + ' delas não têm nenhuma bandeira no seu arquivo, então o '
-            + 'contador só acompanha ' + total + '.'
+        (semBand > 0
+          ? '\n\n' + semBand + ' delas não têm bandeira no seu arquivo: aparecem na '
+            + 'lista para você marcar, mas o mapa não ajuda a achar os pontos.'
+          : '') +
+        (faltaNoMapa > 0
+          ? '\n\n' + faltaNoMapa + ' nem existem nos dados do mapa (área nova demais).'
           : '') + (g.nota ? '\n\n' + g.nota : '');
-      if (semMarca > 0) {
+
+      if (faltaNoMapa > 0) {
         var pc = document.createElement('span');
         pc.className = 'etiq-parcial';
-        pc.textContent = '−' + semMarca;
+        pc.textContent = '−' + faltaNoMapa;
         pc.title = s.title;
         t.appendChild(pc);
       }
@@ -1827,6 +1840,16 @@
         var t2 = document.createElement('div');
         t2.className = 'titulo';
         t2.textContent = nomeSub(i);
+        if (!contaSub[i]) {
+          var sb = document.createElement('span');
+          sb.className = 'etiq-semband';
+          sb.textContent = 'sem bandeira';
+          sb.title = 'Nenhuma bandeira do seu minimapmarkers cai aqui, então o mapa ' +
+                     'não ajuda a achar os ' + (Q.poiPorSubarea || 7) + ' pontos. ' +
+                     'Faça no jogo e marque aqui quando terminar.';
+          t2.appendChild(sb);
+          li.classList.add('sem-bandeira');
+        }
         var cls = g.naQuest ? classeSub(g.nome, nomeSub(i)) : 'fora';
         if (cls === 'duvidosa') {
           var dv = document.createElement('span');
@@ -1862,12 +1885,13 @@
 
         var c3 = document.createElement('div');
         c3.className = 'contagem' + (feito ? ' completo' : '');
-        c3.textContent = feito ? '✓' : pr + '/' + tot;
-        c3.title = feito
-          ? 'Subárea concluída'
-          : 'Você já passou por ' + pr + ' das ' + tot + ' bandeiras daqui. ' +
-            'Bastam ' + (Q.poiPorSubarea || 7) + ' Points of Interest para fechar — ' +
-            'as bandeiras são o pool de onde eles são sorteados.';
+        c3.textContent = feito ? '✓' : (tot ? pr + '/' + tot : '—');
+        c3.title = feito ? 'Subárea concluída'
+          : tot
+            ? 'Você já passou por ' + pr + ' das ' + tot + ' bandeiras daqui. ' +
+              'Bastam ' + (Q.poiPorSubarea || 7) + ' Points of Interest para fechar — ' +
+              'as bandeiras são o pool de onde eles são sorteados.'
+            : 'Sem bandeira aqui: o mapa não ajuda. Marque quando fechar no jogo.';
         li.appendChild(c3);
 
         li.addEventListener('click', function () { selecionarSub(i, true); });
