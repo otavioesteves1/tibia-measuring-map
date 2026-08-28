@@ -92,6 +92,7 @@
   var cacheTiles = new Map();   // chave -> {img, ok, usoEm}
   var pendentes = 0;
   var LIMITE_CACHE = 520;
+  var TENTATIVAS_TILE = 3;         // repete o tile se o servidor engasgar
 
   function caminhoTile(tipo, sx, sy, z) {
     var pref = tipo === 'color' ? 'Minimap_Color_' : 'Minimap_WaypointCost_';
@@ -105,11 +106,27 @@
 
     if (!INDICE[tipo][z].has(sx + '_' + sy)) return null;
 
-    it = { img: new Image(), ok: false, usoEm: performance.now() };
+    it = { img: new Image(), ok: false, usoEm: performance.now(), tentativas: 0 };
+    var url = caminhoTile(tipo, sx, sy, z);
     it.img.decoding = 'async';
     it.img.onload = function () { it.ok = true; pendentes--; atualizarCarregando(); sujar(); };
-    it.img.onerror = function () { it.ok = false; it.falhou = true; pendentes--; atualizarCarregando(); };
-    it.img.src = caminhoTile(tipo, sx, sy, z);
+    // Servido por HTTP (GitHub Pages) um tile pode voltar 503 por estrangulamento
+    // momentaneo. Sem isto o tile ficaria em branco para sempre.
+    it.img.onerror = function () {
+      pendentes--;
+      if (++it.tentativas <= TENTATIVAS_TILE) {
+        setTimeout(function () {
+          pendentes++;
+          atualizarCarregando();
+          it.img.src = url + '?r=' + it.tentativas;
+        }, 400 * it.tentativas);
+      } else {
+        it.ok = false;
+        it.falhou = true;
+      }
+      atualizarCarregando();
+    };
+    it.img.src = url;
     pendentes++;
     atualizarCarregando();
     cacheTiles.set(chave, it);
