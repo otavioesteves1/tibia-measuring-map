@@ -40,7 +40,7 @@
     <button class="btn" id="b-grade" title="Grade de subáreas 256×256 (tecla G)">Grade<span class="tecla">G</span></button>
     <button class="btn" id="b-areas" title="Contornos e nomes das áreas da Cyclopedia (tecla A)">Áreas<span class="tecla">A</span></button>
     <button class="btn" id="b-exiva" title="Faixas de alcance do exiva (tecla E)">Exiva<span class="tecla">E</span></button>
-    <button class="btn" id="b-ocultar" title="Esconder de vez o que já foi conferido (tecla X)">Pendentes<span class="tecla">X</span></button>
+    <button class="btn" id="b-ocultar" title="Mostrar só o que falta conferir — no mapa e nas listas (tecla X)">Só pendentes<span class="tecla">X</span></button>
     <div id="progresso-topo" title="progresso geral">0%</div>
     <button class="btn icone" id="b-lateral" title="Mostrar/ocultar painel lateral (tecla B)">▤</button>
     <button class="btn icone" id="b-tela-cheia" title="Tela cheia (tecla F)">⛶</button>
@@ -115,7 +115,7 @@
           <select id="filtro-icone" class="campo"></select>
           <label class="rotulo linha-check"><input type="checkbox" id="so-andar" checked> só o andar atual</label>
           <label class="rotulo linha-check"><input type="checkbox" id="so-texto"> só os que têm anotação</label>
-          <label class="rotulo linha-check"><input type="checkbox" id="so-pendentes"> só os que faltam conferir</label>
+          <label class="rotulo linha-check" title="É o mesmo botão 'Só pendentes' do topo — vale para o mapa e para as listas"><input type="checkbox" id="so-pendentes"> só os que faltam conferir (X)</label>
           <label class="rotulo linha-check" title="Setas vermelhas e verdes marcam escadas, buracos e cordas — não são pontos para conferir"><input type="checkbox" id="sem-setas" checked> esconder as setas (escadas/buracos)</label>
         </div>
         <div id="lista-marcadores"></div>
@@ -268,7 +268,10 @@
           <td>conclui a <b>subárea</b> daquele ponto (Thais City, Green Claw Swamp…): ela
               fica cinza e some com todas as bandeiras dela, em todos os andares</td></tr>
       <tr><td><kbd>V</kbd></td><td>conclui a subárea que está no centro da tela</td></tr>
-      <tr><td><kbd>X</kbd></td><td>esconder de vez tudo que já foi conferido</td></tr>
+      <tr><td><kbd>X</kbd></td>
+          <td>mostra só o que falta conferir — vale ao mesmo tempo para o mapa,
+              para a lista de marcadores e para a de POIs. É o mesmo controle do
+              botão <b>Só pendentes</b> e do checkbox na aba MARCADORES.</td></tr>
       <tr><td><kbd>Ctrl</kbd> + clique</td><td>só abre o marcador na lista, sem conferir</td></tr>
       <tr><td><b>clique</b> no mapa vazio</td>
           <td>seleciona a região dali e acende ela no mapa; a lista pula para a subárea</td></tr>

@@ -115,13 +115,22 @@ Este é o fluxo principal. Tudo é **salvo sozinho a cada mudança**.
 | **clique** no mapa longe de bandeira | seleciona a região dali e acende ela |
 | **Shift + clique** no mapa | conclui a **subárea** daquele ponto (Thais City, Green Claw Swamp…): o terreno dela fica cinza e sem cor, e **todas as bandeiras dela somem**, em todos os andares |
 | `V` | conclui a subárea que está no centro da tela |
-| `X` | esconde de vez tudo que já foi conferido — sobra só o que falta |
+| `X` | **só pendentes**: esconde o que já foi conferido no mapa **e** nas duas listas |
 | **Ctrl + clique** | só abre o marcador na lista, sem conferir |
 | **botão direito** (clique seco) | cria um POI seu naquele ponto |
 | **botão direito** (arrastando) | caixa de seleção — veja abaixo |
 
-Na aba MARCADORES, o botão `✓` de cada linha faz o mesmo que clicar no mapa, e
-*só os que faltam conferir* deixa a lista só com o que sobrou.
+Na aba MARCADORES, o botão `✓` de cada linha faz o mesmo que clicar no mapa.
+
+### Só pendentes
+
+O botão **Só pendentes** no topo, a tecla `X` e o checkbox *só os que faltam
+conferir* são **o mesmo controle** — mexer em um mexe nos três. Ele esconde o
+que já foi conferido em **três lugares ao mesmo tempo**: no mapa, na lista de
+marcadores e na de POIs.
+
+Com ele ligado, riscar uma bandeira faz ela sumir na hora. Um aviso aparece
+dizendo o que sumiu; para desmarcar, desligue o `X` primeiro.
 
 ### Marcar várias de uma vez
 
@@ -327,7 +336,7 @@ clique aproxima. O **botão direito** arrasta a caixa de seleção.
 | `P` | alterna **Cores** ↔ **Pathfinding** (`WaypointCost`) |
 | `M` | marcadores do jogo |
 | `O` | meus POIs |
-| `X` | esconder o que já foi conferido |
+| `X` | só pendentes (mapa + listas) |
 | `A` | contornos e nomes das áreas da Cyclopedia |
 | `G` | grade de 256×256 dos arquivos do minimapa |
 | `E` | faixas de alcance do exiva (4 / 100 / 274) a partir do centro |

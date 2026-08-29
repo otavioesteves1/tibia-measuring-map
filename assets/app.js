@@ -1365,9 +1365,18 @@
     }
 
     // Clique simples: risca/desrisca o marcador.
-    if (alvo.tipo === 'poi') alternarMarca(alvo.dado.x, alvo.dado.y, alvo.dado.z);
-    else alternarMarca(alvo.dado[0], alvo.dado[1], alvo.dado[2]);
+    var virou;
+    if (alvo.tipo === 'poi') virou = alternarMarca(alvo.dado.x, alvo.dado.y, alvo.dado.z);
+    else virou = alternarMarca(alvo.dado[0], alvo.dado[1], alvo.dado[2]);
     listarMarcadores(); listarPois(); listarSubareas();
+    // com "só pendentes" ligado a bandeira some na hora: sem um aviso o clique
+    // parece nao ter feito nada, e nao da para desmarcar clicando de novo
+    if (virou && E.ocultarFeitos) {
+      var nome = alvo.tipo === 'poi'
+        ? (alvo.dado.titulo || 'POI')
+        : (alvo.dado[4] || window.Icones.nome(alvo.dado[3]));
+      avisar('✓ ' + nome + ' — some da tela; desligue o X para rever');
+    }
     mostrarPopup(px, py);
     sujar();
   });
@@ -1515,7 +1524,6 @@
 
   /* ================================================= lista de marcadores === */
   var filtroTexto = '', filtroIcone = '', apenasAndar = true, apenasComTexto = false;
-  var esconderConferidos = false;
 
   function itemHtml(icone, titulo, sub, chave, acoes, feito) {
     var div = document.createElement('div');
@@ -1544,7 +1552,7 @@
       if (!contavel(m)) return false;
       if (filtroIcone !== '' && m[3] !== +filtroIcone) return false;
       if (apenasComTexto && !m[4]) return false;
-      if (esconderConferidos && marcaFeita(m[0], m[1], m[2])) return false;
+      if (E.ocultarFeitos && marcaFeita(m[0], m[1], m[2])) return false;
       if (!q) return true;
       return (m[4] || '').toLowerCase().indexOf(q) >= 0 ||
              window.Icones.nome(m[3]).toLowerCase().indexOf(q) >= 0 ||
@@ -1556,7 +1564,7 @@
     box.innerHTML = '';
     if (!res.length) {
       box.innerHTML = '<div class="vazio-msg">' +
-        (esconderConferidos && base.length
+        (E.ocultarFeitos && base.length
           ? 'Tudo conferido neste filtro. 🎉'
           : 'Nenhum marcador com esses filtros.') + '</div>';
     } else {
@@ -2060,6 +2068,7 @@
   function listarPois() {
     var q = $('#busca-poi').value.trim().toLowerCase();
     var res = pois.filter(function (p) {
+      if (E.ocultarFeitos && marcaFeita(p.x, p.y, p.z)) return false;
       if (!q) return true;
       return (p.titulo || '').toLowerCase().indexOf(q) >= 0 ||
              (p.texto || '').toLowerCase().indexOf(q) >= 0 ||
@@ -2302,9 +2311,12 @@
     apenasComTexto = ev.target.checked;
     listarMarcadores();
   });
+  // mesmo estado do botao "Pendentes" do topo: um so controle, dois lugares
   $('#so-pendentes').addEventListener('change', function (ev) {
-    esconderConferidos = ev.target.checked;
-    listarMarcadores();
+    E.ocultarFeitos = ev.target.checked;
+    sincronizarBotoes(); salvarPrefs();
+    listarMarcadores(); listarPois();
+    sujar();
   });
   $('#sem-setas').addEventListener('change', function (ev) {
     E.ocultarSetas = ev.target.checked;
@@ -2352,6 +2364,8 @@
     $('#b-areas').classList.toggle('ativo', E.verAreas);
     document.body.classList.toggle('com-selecao', !!E.selecao);
     $('#b-ocultar').classList.toggle('ativo', E.ocultarFeitos);
+    var chkPend = $('#so-pendentes');
+    if (chkPend) chkPend.checked = E.ocultarFeitos;
     var bs = $('#sem-setas'); if (bs) bs.checked = E.ocultarSetas;
     $('#b-camada').classList.toggle('ativo', E.camada === 'waypoint');
     $('#b-camada').querySelector('.rot').textContent =
