@@ -1707,7 +1707,12 @@
       // quais subareas do grupo passam nos filtros
       var subs = g.subs.filter(function (i) {
         if (subAndarAtual && !(andaresSub[i] & bitAndar)) return false;
-        if (subEsconderFeitas && contaSub[i] && feitas[i] >= contaSub[i]) return false;
+        // subFeita(i) e o sinal de verdade; "contaSub[i] && feitas>=conta" cobre
+        // quem completou marcando bandeira por bandeira sem tocar no checkbox
+        // da subarea. So com feitas>=conta ficava CEGO pras subareas "sem
+        // bandeira" (contaSub[i]===0): marcava concluida e nunca sumia daqui.
+        if (subEsconderFeitas &&
+            (subFeita(i) || (contaSub[i] && feitas[i] >= contaSub[i]))) return false;
         if (!q) return true;
         return nomeSub(i).toLowerCase().indexOf(q) >= 0 ||
                g.nome.toLowerCase().indexOf(q) >= 0;
