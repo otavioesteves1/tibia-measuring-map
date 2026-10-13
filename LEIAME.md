@@ -97,7 +97,7 @@ também funciona assim, mas esse caminho não foi testado aqui; o modo servidor 
 | Andares | 16 (z=0 a z=15) |
 | Área | 2560 × 2048 sqm — x 31744–34303, y 30976–33023 |
 | Marcadores do jogo | 5205, dos quais **4688 entram no checklist** |
-| Áreas da Cyclopedia | 20 áreas da quest / **171 subáreas no checklist** |
+| Áreas da Cyclopedia | 20 áreas da quest / **170 subáreas no checklist** |
 
 As 517 setas vermelhas e verdes ficam de fora: elas marcam escadas, buracos e
 cordas, não pontos para conferir. Se quiser trazê-las de volta, desmarque
@@ -154,7 +154,7 @@ contornos e os nomes das áreas por cima do mapa.
 
 São as regiões da **Cyclopedia do próprio jogo**, não quadrantes: **21 áreas-mãe**
 (Thais, Venore, Kazordoon, Edron, Zao…) com **192 subáreas** (Thais City, Green
-Claw Swamp, Fibula, Jakundaf Desert…). **171 delas entram no checklist** — as
+Claw Swamp, Fibula, Jakundaf Desert…). **170 delas entram no checklist** — as
 que a quest pede, tenham elas bandeira no seu arquivo ou não.
 
 Os polígonos são 2D: uma subárea vale para os **16 andares**. Concluir "Thais
@@ -177,7 +177,7 @@ subárea como concluída — igual o jogo conta.
 
 ### Fora da quest
 
-**Dawnport** (ilha tutorial) e **10 regiões** que existem no jogo mas não
+**Dawnport** (ilha tutorial) e **11 regiões** que existem no jogo mas não
 participam da quest foram tiradas do checklist:
 
 | Área | Regiões tiradas |
@@ -188,6 +188,7 @@ participam da quest foram tiradas do checklist:
 | Oramond | Podzilla Maw |
 | Quirefang | Blue Valley |
 | Kilmaresh | Great Expedition Island |
+| Zao | Norcferatu Fortress |
 
 O que muda para elas:
 
@@ -219,12 +220,12 @@ importa se o pool de bandeiras dela tem 5 ou 140 — então o trabalho de uma á
 | Kazordoon | 8 | 56 |
 | Thais, Carlin, Tiquanda | 9 | 63 |
 | Kilmaresh, Marapur | 11 | 77 |
-| Edron, Hrodmir, Yalahar | 12 | 84 |
-| Venore, Zao | 13 | 91 |
+| Edron, Hrodmir, Yalahar, Zao | 12 | 84 |
+| Venore | 13 | 91 |
 | **Vandura** | **16** | **112** |
 
-Total: **173 subáreas, 1211 pontos** para achar — o site acompanha 171 delas
-(1197 pontos).
+Total: **172 subáreas, 1204 pontos** para achar — o site acompanha 170 delas
+(1190 pontos).
 
 ### Ordenação da lista
 
@@ -249,13 +250,16 @@ Cruzei as duas wikis para separar o que realmente vale:
 | | Quantas | No mapa |
 |---|---|---|
 | Confirmadas | 161 | sem etiqueta |
-| Só numa das duas | 12 | **?** — na dúvida, contam |
+| Só numa das duas | 11 | **?** — na dúvida, contam |
 | Em nenhuma | o resto | **não conta** — fica fora da % da área |
 
-As 12 em disputa: Ice Islands, Orc Lands, Krailos Mines, Southern Terramite
+As 11 em disputa: Ice Islands, Orc Lands, Krailos Mines, Southern Terramite
 Tunnels, Kha'zeel Mountains, Oskayaat e Calassa (só na BR); Furious Crater,
-Ruins of Nuur, Salt Caves, Thais Peninsula e Norcferatu Fortress (só na EN).
-Passe o mouse no **?** para ver qual fonte lista cada uma.
+Ruins of Nuur, Salt Caves e Thais Peninsula (só na EN). Passe o mouse no **?**
+para ver qual fonte lista cada uma.
+
+**Norcferatu Fortress** era a 12ª: a wiki EN a lista como descobrível, mas quem
+joga confirmou que não participa da quest, então foi tirada do checklist.
 
 **Venore Dragon Lair** era a 13ª: só a wiki BR cita, mas é confirmada como parte
 de Venore por quem joga, então virou subárea normal e perdeu o **?**.
@@ -315,7 +319,7 @@ na lista assim mesmo**, com a etiqueta **sem bandeira** e `—` no lugar da
 contagem: dá para marcar normalmente, só que o mapa não ajuda a achar os 7
 pontos — você faz no jogo e marca aqui quando fechar.
 
-São **17**, em 7 áreas:
+São **16**, em 6 áreas:
 
 | Área | Sem bandeira |
 |---|---|
@@ -325,9 +329,8 @@ São **17**, em 7 áreas:
 | Edron | Cyclopolis, Edron Hero Fortress |
 | Southern Darama | Ankrahmun Pharaoh Tombs |
 | Thais | Targuna |
-| Zao | Norcferatu Fortress |
 
-Uma área só fecha 100% com **todas**, inclusive essas. O contador cobre **171
+Uma área só fecha 100% com **todas**, inclusive essas. O contador cobre **170
 subáreas**.
 
 O badge **−N** no nome da cidade quer dizer outra coisa: subáreas que a quest

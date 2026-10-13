@@ -93,7 +93,8 @@ window.MAPA_QUEST = {
     "Thais":     ["Temple of Light", "Isle of Destiny", "Rookgaard", "Meluna", "Travora"],
     "Oramond":   ["Podzilla Maw"],
     "Quirefang": ["Blue Valley"],
-    "Kilmaresh": ["Great Expedition Island"]
+    "Kilmaresh": ["Great Expedition Island"],
+    "Zao":       ["Norcferatu Fortress"]
   },
 
   /* Ordem sugerida para fazer a quest. E PALPITE, nao vem de fonte nenhuma.
@@ -350,7 +351,7 @@ window.MAPA_QUEST = {
       ]
   },
 
-  /* As 12 em que as fontes discordam - aparecem com "?" na lista. A wiki EN
+  /* As 11 em que as fontes discordam - aparecem com "?" na lista. A wiki EN
      marca numa tabela quais sao descobriveis; a BR tem uma lista propria e a
      pagina dela esta marcada como esboco. Sem checar no jogo nao da para cravar. */
   subareasDuvidosas: {
@@ -380,9 +381,6 @@ window.MAPA_QUEST = {
       },
       "Vandura": {
           "Calassa": "PT"
-      },
-      "Zao": {
-          "Norcferatu Fortress": "EN"
       }
   },
 
