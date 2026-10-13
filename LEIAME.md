@@ -175,8 +175,33 @@ próxima fica destacada, as liberadas ficam verdes.
 controle de "por onde já passei"; o que move a porcentagem da área é marcar a
 subárea como concluída — igual o jogo conta.
 
-Dawnport não entra na conta — é a ilha tutorial e não faz parte da quest. Por
-isso o total é **20**, e não 21.
+### Fora da quest
+
+**Dawnport** (ilha tutorial) e **10 regiões** que existem no jogo mas não
+participam da quest foram tiradas do checklist:
+
+| Área | Regiões tiradas |
+|---|---|
+| Dawnport | a ilha inteira |
+| Thais | Temple of Light, Isle of Destiny, Rookgaard, Meluna, Travora |
+| Hrodmir | Chyllfroest Chakoya Caves, Chyllfroest Icefire Caves |
+| Oramond | Podzilla Maw |
+| Quirefang | Blue Valley |
+| Kilmaresh | Great Expedition Island |
+
+O que muda para elas:
+
+- **não aparecem na lista**, e não entram no progresso nem nas recompensas — por
+  isso o total de áreas é **20**, e não 21;
+- **no mapa o terreno fica cinza** e as bandeiras somem, como numa subárea
+  concluída (o contorno é cinza-discreto, não dourado nem verde, para você
+  distinguir de uma que você mesmo concluiu);
+- clicar nelas no mapa só avisa que não participam da quest;
+- **clicar na cidade na lista não acende mais elas** — antes, selecionar *Thais*
+  acendia Rookgaard e dava zoom-out até a ilha.
+
+A lista fica em `data/quest.js` (`foraDaQuest` e `subareasForaDaQuest`). Para
+trazer algo de volta, apague a linha.
 
 ### O que mede a dificuldade
 
@@ -263,7 +288,6 @@ Na linha da cidade:
 - os riscos na barra são os marcos de **30%** e **70%**; ficam verdes ao passar
 - **−6** — a área tem 6 subáreas sem nenhum marcador seu, então elas não dá para
   acompanhar aqui (veja abaixo)
-- **fora da quest** — Dawnport
 
 - **checkbox da cidade** — conclui / reabre todas as subáreas dela de uma vez
 - **checkbox da subárea** — conclui / reabre só ela

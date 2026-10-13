@@ -297,13 +297,29 @@
   // nao ponto para conferir. Por padrao ficam fora do mapa e da contagem.
   var ICONES_SETA = [14, 15, 16, 17, 18, 19];
   function ehSeta(icone) { return icone >= 14 && icone <= 19; }
-  function contavel(m) { return !(E.ocultarSetas && ehSeta(m[3])); }
+  /** Conta como "ponto para conferir": nao e seta (se estiverem escondidas) e
+      nao cai numa subarea tirada da quest. E por aqui que passam o mapa, as
+      listas, a caixa de selecao e os totais - uma regra so, em todo lugar. */
+  function contavel(m) {
+    return !(E.ocultarSetas && ehSeta(m[3])) && !excluida(m[5]);
+  }
 
   /* ------------------------------------------ dados da Measuring Tibia --- */
   var Q = window.MAPA_QUEST || { areas: {}, subareasCertas: {}, subareasDuvidosas: {},
                                  recompensas: [], titulos: [], marcos: [],
-                                 foraDaQuest: [], notasSubarea: {} };
+                                 foraDaQuest: [], subareasForaDaQuest: {},
+                                 notasSubarea: {} };
   var FORA_DA_QUEST = new Set(Q.foraDaQuest || []);
+
+  /* Subareas tiradas do checklist (data/quest.js): a area inteira em
+     foraDaQuest, ou so as citadas em subareasForaDaQuest. Guardadas por
+     INDICE em SUB, que e como o resto do app enxerga uma subarea. */
+  var EXCLUIDA = new Set();
+  SUB.forEach(function (s, i) {
+    var nomes = Q.subareasForaDaQuest && Q.subareasForaDaQuest[s.area];
+    if (FORA_DA_QUEST.has(s.area) || (nomes && nomes.indexOf(s.subarea) >= 0)) EXCLUIDA.add(i);
+  });
+  function excluida(i) { return i >= 0 && EXCLUIDA.has(i); }
 
   function infoArea(nome) { return (Q.areas && Q.areas[nome]) || {}; }
   function contaParaQuest(nome) { return !FORA_DA_QUEST.has(nome) && nome !== 'Fora das áreas'; }
@@ -327,7 +343,9 @@
      { tipo: 'area'|'sub', area: 'Thais', subs: [indices] }                */
   function subsDaArea(nome) {
     var r = [];
-    SUB.forEach(function (s, i) { if (s.area === nome) r.push(i); });
+    // fora da quest nao entra: clicar em "Thais" acendia Rookgaard, Meluna,
+    // Travora... e dava zoom-out ate a ilha de Rookgaard, la no canto
+    SUB.forEach(function (s, i) { if (s.area === nome && !EXCLUIDA.has(i)) r.push(i); });
     return r;
   }
 
@@ -433,6 +451,7 @@
        nem entra na quest (Rookgaard, Great Expedition Island...). */
     var porArea = {};
     SUB.forEach(function (s, i) {
+      if (EXCLUIDA.has(i)) return;
       if (!contaSub[i] &&
           !(contaParaQuest(s.area) && contaNaArea(s.area, s.subarea))) return;
       (porArea[s.area] || (porArea[s.area] = [])).push(i);
@@ -618,11 +637,11 @@
 
   /** Subarea concluida fica cinza e escura, recortada no proprio contorno. */
   function apagarSubareasFeitas(x0, x1, y0, y1) {
-    if (!PROG.subareas.size) return;
+    if (!PROG.subareas.size && !EXCLUIDA.size) return;
     ctx.save();
     transformarParaMundo();
-    PROG.subareas.forEach(function (id) {
-      var s = subPorId[id];
+
+    function apagar(s) {
       if (!s || !visivelNaTela(s.bbox, x0, x1, y0, y1)) return;
       var b = s.bbox;
       ctx.save();
@@ -634,7 +653,13 @@
       ctx.fillStyle = 'rgba(10,9,8,.45)';           // e escurece um pouco
       ctx.fillRect(b[0], b[1], b[2] - b[0] + 1, b[3] - b[1] + 1);
       ctx.restore();
-    });
+    }
+
+    // concluidas pelo usuario + as que nao participam da quest (Dawnport,
+    // Rookgaard...): as duas ficam cinza, a diferenca esta so no contorno
+    PROG.subareas.forEach(function (id) { apagar(subPorId[id]); });
+    EXCLUIDA.forEach(function (i) { apagar(SUB[i]); });
+
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.restore();
   }
@@ -717,7 +742,8 @@
     ctx.lineWidth = 1.4 / s;
     for (var v = 0; v < visiveis.length; v++) {
       var i2 = visiveis[v];
-      ctx.strokeStyle = subFeita(i2) ? 'rgba(111,156,111,.85)' : 'rgba(216,169,74,.75)';
+      ctx.strokeStyle = excluida(i2) ? 'rgba(140,135,125,.45)'
+                      : subFeita(i2) ? 'rgba(111,156,111,.85)' : 'rgba(216,169,74,.75)';
       ctx.stroke(caminhoDe(i2));
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -732,11 +758,11 @@
       var sub = SUB[visiveis[w]];
       var px = paraTelaX(sub.center[0]), py = paraTelaY(sub.center[1]);
       if (px < 4 || py < 4 || px > larg - 4 || py > alt - 4) continue;
-      var feito = subFeita(sub.idx);
+      var feito = subFeita(sub.idx), fora = excluida(sub.idx);
       ctx.lineWidth = 3;
       ctx.strokeStyle = 'rgba(10,9,8,.9)';
       ctx.strokeText(sub.subarea, px, py);
-      ctx.fillStyle = feito ? '#6f9c6f' : '#f4ead6';
+      ctx.fillStyle = fora ? '#86817a' : feito ? '#6f9c6f' : '#f4ead6';
       ctx.fillText(sub.subarea, px, py);
     }
     ctx.restore();
@@ -1326,6 +1352,7 @@
     if (ev.shiftKey) {
       var i = subareaEm(Math.floor(paraMundoX(px)), Math.floor(paraMundoY(py)));
       if (i < 0) { avisar('Aqui não tem nenhuma área da Cyclopedia.'); return; }
+      if (excluida(i)) { avisar(nomeCompleto(i) + ' — não participa da quest'); return; }
       alternarSub(i);
       avisar((subFeita(i) ? 'Concluída: ' : 'Reaberta: ') + nomeCompleto(i));
       listarSubareas(); listarMarcadores(); listarPois();
@@ -1338,6 +1365,10 @@
     // Clique no mapa longe de bandeira: seleciona a regiao dali.
     if (!alvo) {
       var iSel = subareaEm(Math.floor(paraMundoX(px)), Math.floor(paraMundoY(py)));
+      if (excluida(iSel)) {
+        avisar(nomeCompleto(iSel) + ' — não participa da quest');
+        return;
+      }
       if (iSel < 0) {
         if (E.selecao) { limparSelecao(); avisar('Seleção limpa'); }
         return;
@@ -1433,6 +1464,7 @@
       case 'v': {                                   // conclui a subarea do centro
         var iv = subareaEm(Math.floor(E.centroX), Math.floor(E.centroY));
         if (iv < 0) { avisar('Aqui não tem nenhuma área da Cyclopedia.'); break; }
+        if (excluida(iv)) { avisar(nomeCompleto(iv) + ' — não participa da quest'); break; }
         alternarSub(iv);
         avisar((subFeita(iv) ? 'Concluída: ' : 'Reaberta: ') + nomeCompleto(iv));
         listarSubareas(); listarMarcadores(); listarPois();
@@ -2561,7 +2593,10 @@
     var opFiltro = '<option value="">todos os icones</option>';
     var opPoi = '';
     var contagem = {};
-    MARCAS_JOGO.forEach(function (m) { contagem[m[3]] = (contagem[m[3]] || 0) + 1; });
+    MARCAS_JOGO.forEach(function (m) {
+      if (excluida(m[5])) return;          // mesmo numero que a lista vai mostrar
+      contagem[m[3]] = (contagem[m[3]] || 0) + 1;
+    });
     for (var i = 0; i < window.Icones.total; i++) {
       var n = window.Icones.nome(i);
       if (contagem[i] && !(E.ocultarSetas && ehSeta(i))) {

@@ -77,8 +77,24 @@ window.MAPA_QUEST = {
     soDentroDaArea: true
   },
 
+  /* TIRADO DO CHECKLIST: nao participa da quest, entao some da lista, nao conta
+     em progresso nem recompensa, e o terreno fica cinza e sem bandeiras no
+     mapa (igual uma subarea concluida - so que sem ✓).
+
+     Duas listas, a primeira vale para a AREA INTEIRA:
+       foraDaQuest            -> todas as subareas da area
+       subareasForaDaQuest    -> so as subareas citadas
+     Para trazer algo de volta, e so apagar a linha. */
   // Dawnport e a ilha tutorial: nao entra na quest e o personagem nao volta.
   foraDaQuest: ['Dawnport'],
+
+  subareasForaDaQuest: {
+    "Hrodmir":   ["Chyllfroest Chakoya Caves", "Chyllfroest Icefire Caves"],
+    "Thais":     ["Temple of Light", "Isle of Destiny", "Rookgaard", "Meluna", "Travora"],
+    "Oramond":   ["Podzilla Maw"],
+    "Quirefang": ["Blue Valley"],
+    "Kilmaresh": ["Great Expedition Island"]
+  },
 
   /* Ordem sugerida para fazer a quest. E PALPITE, nao vem de fonte nenhuma.
      Criterio, em peso decrescente: precisa de quest de acesso? exige level?
