@@ -248,16 +248,19 @@ Cruzei as duas wikis para separar o que realmente vale:
 
 | | Quantas | No mapa |
 |---|---|---|
-| Confirmadas nas duas | 160 | sem etiqueta |
-| Só numa das duas | 13 | **?** — na dúvida, contam |
+| Confirmadas | 161 | sem etiqueta |
+| Só numa das duas | 12 | **?** — na dúvida, contam |
 | Em nenhuma | o resto | **não conta** — fica fora da % da área |
 
-As 13 em disputa: Ice Islands, Orc Lands, Krailos Mines, Southern Terramite
-Tunnels, Kha'zeel Mountains, Oskayaat, Calassa e Venore Dragon Lair (só na BR);
-Furious Crater, Ruins of Nuur, Salt Caves, Thais Peninsula e Norcferatu Fortress
-(só na EN). Passe o mouse no **?** para ver qual fonte lista cada uma.
+As 12 em disputa: Ice Islands, Orc Lands, Krailos Mines, Southern Terramite
+Tunnels, Kha'zeel Mountains, Oskayaat e Calassa (só na BR); Furious Crater,
+Ruins of Nuur, Salt Caves, Thais Peninsula e Norcferatu Fortress (só na EN).
+Passe o mouse no **?** para ver qual fonte lista cada uma.
 
-Na prática isso muda a conta: Thais fecha 100% com 8 subáreas, sem precisar de
+**Venore Dragon Lair** era a 13ª: só a wiki BR cita, mas é confirmada como parte
+de Venore por quem joga, então virou subárea normal e perdeu o **?**.
+
+Na prática isso muda a conta: Thais fecha 100% com 9 subáreas, sem precisar de
 Adventurers' Guild, Great Expedition Wharf e Newhaven, que não contam.
 
 ### Ver a região no mapa

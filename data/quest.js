@@ -143,7 +143,9 @@ window.MAPA_QUEST = {
     "Dawnport":          { ordem: 99, achievement: null,
                           nota: "Ilha tutorial. Nao faz parte da quest." }
   },
-  /* Subareas que CONTAM para a quest, confirmadas nas duas wikis (160). */
+  /* Subareas que CONTAM para a quest (161): as 160 que as duas wikis listam,
+     mais Venore Dragon Lair - so a wiki BR cita, mas e confirmada como parte
+     de Venore por quem joga (jogador, set/2026). */
   subareasCertas: {
       "Ab'Dendriel": [
           "Ab'Dendriel City",
@@ -314,6 +316,7 @@ window.MAPA_QUEST = {
           "Plains of Havoc",
           "Shadowthorn",
           "Venore City",
+          "Venore Dragon Lair",
           "Venore Southern Swamp",
           "Venore Surroundings"
       ],
@@ -347,7 +350,7 @@ window.MAPA_QUEST = {
       ]
   },
 
-  /* As 13 em que as fontes discordam - aparecem com "?" na lista. A wiki EN
+  /* As 12 em que as fontes discordam - aparecem com "?" na lista. A wiki EN
      marca numa tabela quais sao descobriveis; a BR tem uma lista propria e a
      pagina dela esta marcada como esboco. Sem checar no jogo nao da para cravar. */
   subareasDuvidosas: {
@@ -377,9 +380,6 @@ window.MAPA_QUEST = {
       },
       "Vandura": {
           "Calassa": "PT"
-      },
-      "Venore": {
-          "Venore Dragon Lair": "PT"
       },
       "Zao": {
           "Norcferatu Fortress": "EN"
